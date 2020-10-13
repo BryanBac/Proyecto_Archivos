@@ -20,6 +20,7 @@ import prueba.Funciones;
 public class Interfaz extends javax.swing.JFrame {
 
     Funciones Fun;
+    RandomAccessFile Biblioteca;
     /**
      * Creates new form Interfaz
      */
@@ -117,54 +118,75 @@ public class Interfaz extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BAbrirActionPerformed
-        TextR.setText("");
-        JFileChooser selector= new JFileChooser();
-        int opcion= selector.showOpenDialog(this);
-        if(opcion==JFileChooser.APPROVE_OPTION)
-        {
-            String nombre_archivo=selector.getSelectedFile().getPath();
-            String ruta= selector.getSelectedFile().toString();
-            boolean siEs= Fun.esMp3(ruta);
-            if(siEs==true)
+        try {
+            TextR.setText("");
+            JFileChooser selector= new JFileChooser();
+            int opcion= selector.showOpenDialog(this);
+            Biblioteca=new RandomAccessFile("BibliotecaMusical","rw");
+            Biblioteca.seek(Biblioteca.length());
+            
+            if(opcion==JFileChooser.APPROVE_OPTION)
             {
-                TextoBooleano.setText("si es");
-                try {
-                    RandomAccessFile archivo= new RandomAccessFile(ruta,"rw");
-                    for(int i=1; i<=10;i++)
-                    {
-                        archivo.readByte();
-                    }
-                    byte[] tagB = new byte[4];
-                    archivo.read(tagB);
-                    String tagN=new String(tagB);
-                    short posic=Fun.ObtenerTag(tagN);
-                    while(posic!=-3)
-                    {
-                        int tamaño =  archivo.readInt();
-                        for(int i=0; i<2;i++)
+                String nombre_archivo=selector.getSelectedFile().getPath();
+                
+                String ruta= selector.getSelectedFile().toString();
+                boolean siEs= Fun.esMp3(ruta);
+                if(siEs==true)
+                {
+                    TextoBooleano.setText("si es");
+                    Biblioteca.writeBytes("BEBP"); //este es mi separador
+                    Biblioteca.writeBytes("PATH");
+                    Biblioteca.writeShort(ruta.length());
+                    Biblioteca.writeBytes(ruta);
+                    try {
+                        RandomAccessFile archivo= new RandomAccessFile(ruta,"rw");
+                        for(int i=1; i<=10;i++)
                         {
                             archivo.readByte();
                         }
-                        byte[] contenido = new byte[tamaño];
-                        archivo.read(contenido);
-                        String tCon= new String(contenido);
-                        if(posic!=-1)
-                        {
-                            TextR.setText(TextR.getText()+Fun.TraducirTag(posic)+": " + tCon+"-");
-                        }
-                        tagB = new byte[4];
+                        byte[] tagB = new byte[4];
                         archivo.read(tagB);
-                        tagN=new String(tagB);
-                        posic=Fun.ObtenerTag(tagN);
+                        String tagN=new String(tagB);
+                        short posic=Fun.ObtenerTag(tagN);
+                        while(posic!=-3)
+                        {
+                            
+                            int tamaño =  archivo.readInt();
+                            for(int i=0; i<2;i++)
+                            {
+                                archivo.readByte();
+                            }
+                            byte[] contenido = new byte[tamaño];
+                            archivo.read(contenido);
+                            String tCon= new String(contenido);
+                            
+                            if(posic!=-1)
+                            {
+                                Biblioteca.writeBytes(tagN); //escribo la cabecera del tag
+                                //esto de aquí es para almacenar los tags en 
+                                Biblioteca.writeShort(tCon.length());
+                                Biblioteca.writeBytes(tCon);
+                                //
+//                                TextR.setText(TextR.getText()+Fun.TraducirTag(posic)+": " + tCon+"-"); //esto ya no me sirve
+                            }
+                            tagB = new byte[4];
+                            archivo.read(tagB);
+                            tagN=new String(tagB);
+                            posic=Fun.ObtenerTag(tagN);
+                        }
+                        archivo.close();
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    archivo.close();
-                } catch (FileNotFoundException ex) {
-                    Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-                } catch (IOException ex) {
-                    Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                    Biblioteca.close();
                 }
-                
             }
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_BAbrirActionPerformed
 
