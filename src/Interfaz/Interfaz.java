@@ -5,20 +5,25 @@
  */
 package Interfaz;
 
+import java.awt.event.ActionListener;
+import java.awt.event.ActionEvent;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
+import prueba.Boton;
 import prueba.Funciones;
 
 /**
  *
  * @author HP15DA0023LA
  */
-public class Interfaz extends javax.swing.JFrame {
+public class Interfaz extends javax.swing.JFrame implements ActionListener {
 
+    ArrayList<Boton> lista;
     Funciones Fun;
     RandomAccessFile Biblioteca;
     /**
@@ -27,6 +32,17 @@ public class Interfaz extends javax.swing.JFrame {
     public Interfaz() {
         initComponents();
         Fun= new Funciones();
+        lista = new ArrayList();
+        
+    }
+    public void actionPerformed(ActionEvent e)
+    {
+        Boton temp2= (Boton)e.getSource();
+        VentanaInfo ven= new VentanaInfo();
+        ven.agregar(temp2);
+        ven.toFront();
+        ven.setVisible(true);
+        
     }
 
     /**
@@ -40,22 +56,23 @@ public class Interfaz extends javax.swing.JFrame {
 
         jPanel1 = new javax.swing.JPanel();
         BAbrir = new javax.swing.JButton();
-        TextR = new javax.swing.JTextField();
         TextoBooleano = new javax.swing.JTextField();
         jLabel1 = new javax.swing.JLabel();
+        BotonArtista = new javax.swing.JButton();
+        BotonAlbum = new javax.swing.JButton();
+        BotonPista = new javax.swing.JButton();
+        jButton1 = new javax.swing.JButton();
+        jPanel2 = new javax.swing.JPanel();
+        Panel = new javax.swing.JPanel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
+
+        jPanel1.setBackground(new java.awt.Color(153, 153, 255));
 
         BAbrir.setText("Abrir archivo");
         BAbrir.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 BAbrirActionPerformed(evt);
-            }
-        });
-
-        TextR.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                TextRActionPerformed(evt);
             }
         });
 
@@ -67,6 +84,34 @@ public class Interfaz extends javax.swing.JFrame {
 
         jLabel1.setText("¿Es Mp3?");
 
+        BotonArtista.setText("Artistas");
+        BotonArtista.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BotonArtistaActionPerformed(evt);
+            }
+        });
+
+        BotonAlbum.setText("Album");
+        BotonAlbum.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BotonAlbumActionPerformed(evt);
+            }
+        });
+
+        BotonPista.setText("Pista");
+        BotonPista.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                BotonPistaActionPerformed(evt);
+            }
+        });
+
+        jButton1.setText("Vaciar Pantalla");
+        jButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton1ActionPerformed(evt);
+            }
+        });
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -74,15 +119,22 @@ public class Interfaz extends javax.swing.JFrame {
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(TextR)
+                    .addComponent(BAbrir)
+                    .addComponent(BotonArtista))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addComponent(BAbrir)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                        .addGap(14, 14, 14)
                         .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(18, 18, 18)
-                        .addComponent(TextoBooleano, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addGap(0, 115, Short.MAX_VALUE)))
-                .addContainerGap())
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(TextoBooleano, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addComponent(BotonAlbum)
+                        .addGap(33, 33, 33)
+                        .addComponent(BotonPista)
+                        .addGap(31, 31, 31)
+                        .addComponent(jButton1)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -92,8 +144,42 @@ public class Interfaz extends javax.swing.JFrame {
                     .addComponent(BAbrir)
                     .addComponent(TextoBooleano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(TextR, javax.swing.GroupLayout.PREFERRED_SIZE, 233, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(BotonArtista)
+                    .addComponent(BotonAlbum)
+                    .addComponent(BotonPista)
+                    .addComponent(jButton1))
+                .addGap(15, 15, 15))
+        );
+
+        jPanel2.setBackground(new java.awt.Color(153, 255, 153));
+
+        javax.swing.GroupLayout PanelLayout = new javax.swing.GroupLayout(Panel);
+        Panel.setLayout(PanelLayout);
+        PanelLayout.setHorizontalGroup(
+            PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 0, Short.MAX_VALUE)
+        );
+        PanelLayout.setVerticalGroup(
+            PanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 199, Short.MAX_VALUE)
+        );
+
+        javax.swing.GroupLayout jPanel2Layout = new javax.swing.GroupLayout(jPanel2);
+        jPanel2.setLayout(jPanel2Layout);
+        jPanel2Layout.setHorizontalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        jPanel2Layout.setVerticalGroup(
+            jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel2Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(Panel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -101,16 +187,15 @@ public class Interfaz extends javax.swing.JFrame {
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+            .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jPanel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -119,11 +204,16 @@ public class Interfaz extends javax.swing.JFrame {
 
     private void BAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BAbrirActionPerformed
         try {
-            TextR.setText("");
             JFileChooser selector= new JFileChooser();
             int opcion= selector.showOpenDialog(this);
             Biblioteca=new RandomAccessFile("BibliotecaMusical","rw");
-            Biblioteca.seek(Biblioteca.length());
+            long tamañoBiblio=Biblioteca.length();
+            if(tamañoBiblio!=0)
+            {
+                tamañoBiblio=tamañoBiblio-4;
+            }
+            Biblioteca.seek(tamañoBiblio);
+            
             
             if(opcion==JFileChooser.APPROVE_OPTION)
             {
@@ -180,9 +270,10 @@ public class Interfaz extends javax.swing.JFrame {
                     } catch (IOException ex) {
                         Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
                     }
-                    Biblioteca.close();
+                    Biblioteca.writeBytes("MERC"); //esto indica que es el final
                 }
             }
+            Biblioteca.close();
         } catch (FileNotFoundException ex) {
             Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
@@ -190,13 +281,31 @@ public class Interfaz extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_BAbrirActionPerformed
 
-    private void TextRActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TextRActionPerformed
-        
-    }//GEN-LAST:event_TextRActionPerformed
-
     private void TextoBooleanoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TextoBooleanoActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_TextoBooleanoActionPerformed
+
+    private void BotonArtistaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonArtistaActionPerformed
+        VaciarLista();
+        LlenarLista();
+        MostrarArtista();
+    }//GEN-LAST:event_BotonArtistaActionPerformed
+
+    private void BotonAlbumActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonAlbumActionPerformed
+        VaciarLista();
+        LlenarLista();
+        MostrarAlbum();
+    }//GEN-LAST:event_BotonAlbumActionPerformed
+
+    private void BotonPistaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BotonPistaActionPerformed
+        VaciarLista();
+        LlenarLista();
+        MostrarPista();
+    }//GEN-LAST:event_BotonPistaActionPerformed
+
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+        this.Panel.removeAll();
+    }//GEN-LAST:event_jButton1ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -224,6 +333,7 @@ public class Interfaz extends javax.swing.JFrame {
             java.util.logging.Logger.getLogger(Interfaz.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
+        //</editor-fold>
 
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
@@ -232,12 +342,101 @@ public class Interfaz extends javax.swing.JFrame {
             }
         });
     }
+    public void VaciarLista()
+    {
+        lista=new ArrayList();
+        this.Panel.removeAll();
+    }
+    public void LlenarLista()
+    {
+        try {
+            Biblioteca=new RandomAccessFile("BibliotecaMusical","rw");
+            byte[] lectorT = new byte[4];
+            Biblioteca.read(lectorT);
+            String identificador= new String(lectorT);
+            Boton b = new Boton();
+            while(!"MERC".equals(identificador))
+            {
+                if("BEBP".equals(identificador))
+                {
+                    lectorT = new byte[4];
+                    Biblioteca.read(lectorT);
+                    identificador= new String(lectorT);
+                }
+                short tamaño= Biblioteca.readShort();
+                byte[] info = new byte[tamaño];
+                Biblioteca.read(info);
+                b.DiferenciadorTags(identificador, info);
+                //
+                lectorT = new byte[4];
+                Biblioteca.read(lectorT);
+                identificador= new String(lectorT);
+                if(("BEBP".equals(identificador))||("MERC".equals(identificador)))
+                {
+                    lista.add(b);
+                    b= new Boton();
+                }
+            }
+            Biblioteca.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    public void MostrarArtista()
+    {
+        this.Panel.removeAll();
+        this.Panel.setLayout(new java.awt.GridLayout(lista.size(), 1));
+        for(int i=0; i<lista.size();i++)
+        {
+            Boton b= new Boton();
+            b= lista.get(i);
+            b.addActionListener(this);
+            b.setText(b.getArtista());
+            b.setVisible(true);
+            this.Panel.add(b);
+        }
+    }
+    public void MostrarAlbum()
+    {
+        this.Panel.removeAll();
+        this.Panel.setLayout(new java.awt.GridLayout(lista.size(), 1));
+        for(int i=0; i<lista.size();i++)
+        {
+            Boton bAlbum= new Boton();
+            bAlbum= lista.get(i);
+            bAlbum.addActionListener(this);
+            bAlbum.setText(bAlbum.getAlbum());
+            bAlbum.setVisible(true);
+            this.Panel.add(bAlbum);
+        }
+    }
+    public void MostrarPista()
+    {
+        this.Panel.removeAll();
+        this.Panel.setLayout(new java.awt.GridLayout(lista.size(), 1));
+        for(int i=0; i<lista.size();i++)
+        {
+            Boton bPista= new Boton();
+            bPista= lista.get(i);
+            bPista.addActionListener(this);
+            bPista.setText(bPista.getPista());
+            bPista.setVisible(true);
+            this.Panel.add(bPista);
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton BAbrir;
-    private javax.swing.JTextField TextR;
+    private javax.swing.JButton BotonAlbum;
+    private javax.swing.JButton BotonArtista;
+    private javax.swing.JButton BotonPista;
+    private javax.swing.JPanel Panel;
     private javax.swing.JTextField TextoBooleano;
+    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
+    private javax.swing.JPanel jPanel2;
     // End of variables declaration//GEN-END:variables
 }
