@@ -7,10 +7,12 @@ package Interfaz;
 
 import java.awt.event.ActionListener;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JFileChooser;
@@ -26,11 +28,13 @@ public class Interfaz extends javax.swing.JFrame implements ActionListener {
     ArrayList<Boton> lista;
     Funciones Fun;
     RandomAccessFile Biblioteca;
+    String rutaBiblioteca;
     /**
      * Creates new form Interfaz
      */
     public Interfaz() {
         initComponents();
+        VerificarBiblio();
         Fun= new Funciones();
         lista = new ArrayList();
         
@@ -61,7 +65,8 @@ public class Interfaz extends javax.swing.JFrame implements ActionListener {
         BotonArtista = new javax.swing.JButton();
         BotonAlbum = new javax.swing.JButton();
         BotonPista = new javax.swing.JButton();
-        jButton1 = new javax.swing.JButton();
+        BtnVaciarPantalla = new javax.swing.JButton();
+        AgregarRuta = new javax.swing.JButton();
         jPanel2 = new javax.swing.JPanel();
         Panel = new javax.swing.JPanel();
 
@@ -105,10 +110,17 @@ public class Interfaz extends javax.swing.JFrame implements ActionListener {
             }
         });
 
-        jButton1.setText("Vaciar Pantalla");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
+        BtnVaciarPantalla.setText("Vaciar Pantalla");
+        BtnVaciarPantalla.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
+                BtnVaciarPantallaActionPerformed(evt);
+            }
+        });
+
+        AgregarRuta.setText("Agregar Ruta");
+        AgregarRuta.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                AgregarRutaActionPerformed(evt);
             }
         });
 
@@ -124,17 +136,20 @@ public class Interfaz extends javax.swing.JFrame implements ActionListener {
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGap(14, 14, 14)
-                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(TextoBooleano, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(BotonAlbum)
                         .addGap(33, 33, 33)
                         .addComponent(BotonPista)
                         .addGap(31, 31, 31)
-                        .addComponent(jButton1)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(BtnVaciarPantalla)
+                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addGroup(jPanel1Layout.createSequentialGroup()
+                        .addGap(14, 14, 14)
+                        .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 71, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(TextoBooleano, javax.swing.GroupLayout.PREFERRED_SIZE, 55, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(AgregarRuta)
+                        .addGap(20, 20, 20))))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -143,13 +158,14 @@ public class Interfaz extends javax.swing.JFrame implements ActionListener {
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BAbrir)
                     .addComponent(TextoBooleano, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                    .addComponent(jLabel1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(AgregarRuta))
                 .addGap(18, 18, 18)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(BotonArtista)
                     .addComponent(BotonAlbum)
                     .addComponent(BotonPista)
-                    .addComponent(jButton1))
+                    .addComponent(BtnVaciarPantalla))
                 .addGap(15, 15, 15))
         );
 
@@ -203,82 +219,15 @@ public class Interfaz extends javax.swing.JFrame implements ActionListener {
     }// </editor-fold>//GEN-END:initComponents
 
     private void BAbrirActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BAbrirActionPerformed
-        try {
-            JFileChooser selector= new JFileChooser();
-            int opcion= selector.showOpenDialog(this);
-            Biblioteca=new RandomAccessFile("BibliotecaMusical","rw");
-            long tamañoBiblio=Biblioteca.length();
-            if(tamañoBiblio!=0)
+         JFileChooser selector= new JFileChooser();
+        selector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int opcion= selector.showOpenDialog(this);
+        if(opcion==JFileChooser.APPROVE_OPTION)
             {
-                tamañoBiblio=tamañoBiblio-4;
-            }
-            Biblioteca.seek(tamañoBiblio);
-            
-            
-            if(opcion==JFileChooser.APPROVE_OPTION)
-            {
-                String nombre_archivo=selector.getSelectedFile().getPath();
+                File fichero= selector.getSelectedFile();
+                getFiles(fichero.getAbsolutePath());
                 
-                String ruta= selector.getSelectedFile().toString();
-                boolean siEs= Fun.esMp3(ruta);
-                if(siEs==true)
-                {
-                    TextoBooleano.setText("si es");
-                    Biblioteca.writeBytes("BEBP"); //este es mi separador
-                    Biblioteca.writeBytes("PATH");
-                    Biblioteca.writeShort(ruta.length());
-                    Biblioteca.writeBytes(ruta);
-                    try {
-                        RandomAccessFile archivo= new RandomAccessFile(ruta,"rw");
-                        for(int i=1; i<=10;i++)
-                        {
-                            archivo.readByte();
-                        }
-                        byte[] tagB = new byte[4];
-                        archivo.read(tagB);
-                        String tagN=new String(tagB);
-                        short posic=Fun.ObtenerTag(tagN);
-                        while(posic!=-3)
-                        {
-                            
-                            int tamaño =  archivo.readInt();
-                            for(int i=0; i<2;i++)
-                            {
-                                archivo.readByte();
-                            }
-                            byte[] contenido = new byte[tamaño];
-                            archivo.read(contenido);
-                            String tCon= new String(contenido);
-                            
-                            if(posic!=-1)
-                            {
-                                Biblioteca.writeBytes(tagN); //escribo la cabecera del tag
-                                //esto de aquí es para almacenar los tags en 
-                                Biblioteca.writeShort(tCon.length());
-                                Biblioteca.writeBytes(tCon);
-                                //
-//                                TextR.setText(TextR.getText()+Fun.TraducirTag(posic)+": " + tCon+"-"); //esto ya no me sirve
-                            }
-                            tagB = new byte[4];
-                            archivo.read(tagB);
-                            tagN=new String(tagB);
-                            posic=Fun.ObtenerTag(tagN);
-                        }
-                        archivo.close();
-                    } catch (FileNotFoundException ex) {
-                        Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (IOException ex) {
-                        Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                    Biblioteca.writeBytes("MERC"); //esto indica que es el final
-                }
-            }
-            Biblioteca.close();
-        } catch (FileNotFoundException ex) {
-            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
-        }
+            }    
     }//GEN-LAST:event_BAbrirActionPerformed
 
     private void TextoBooleanoActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_TextoBooleanoActionPerformed
@@ -303,9 +252,40 @@ public class Interfaz extends javax.swing.JFrame implements ActionListener {
         MostrarPista();
     }//GEN-LAST:event_BotonPistaActionPerformed
 
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
+    private void BtnVaciarPantallaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_BtnVaciarPantallaActionPerformed
         this.Panel.removeAll();
-    }//GEN-LAST:event_jButton1ActionPerformed
+    }//GEN-LAST:event_BtnVaciarPantallaActionPerformed
+
+    private void AgregarRutaActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_AgregarRutaActionPerformed
+        JFileChooser selector= new JFileChooser();
+        selector.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        int opcion= selector.showOpenDialog(this);
+        if(opcion==JFileChooser.APPROVE_OPTION)
+            {
+            try {
+                File fichero= selector.getSelectedFile();
+             
+                rutaBiblioteca= fichero.getAbsolutePath()+"\\BibliotecaMusical.musicB";
+                RandomAccessFile bibli= new RandomAccessFile(rutaBiblioteca,"rw");
+                bibli.close();
+                RandomAccessFile revision = new RandomAccessFile("Direccion.path","rw");
+                revision.writeByte(1);
+                revision.writeBytes(rutaBiblioteca);
+                revision.close();
+                BotonArtista.setEnabled(true);
+                BAbrir.setEnabled(true);
+                BotonAlbum.setEnabled(true);
+                BotonPista.setEnabled(true);
+                BtnVaciarPantalla.setEnabled(true);
+                AgregarRuta.setEnabled(false);
+            } catch (FileNotFoundException ex) {
+                Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (IOException ex) {
+                Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+            }
+                       
+            } 
+    }//GEN-LAST:event_AgregarRutaActionPerformed
 
     /**
      * @param args the command line arguments
@@ -350,31 +330,35 @@ public class Interfaz extends javax.swing.JFrame implements ActionListener {
     public void LlenarLista()
     {
         try {
-            Biblioteca=new RandomAccessFile("BibliotecaMusical","rw");
+            Biblioteca=new RandomAccessFile(rutaBiblioteca,"rw");
             byte[] lectorT = new byte[4];
             Biblioteca.read(lectorT);
             String identificador= new String(lectorT);
             Boton b = new Boton();
-            while(!"MERC".equals(identificador))
+            long tam = Biblioteca.length();
+            if(tam!=0)
             {
-                if("BEBP".equals(identificador))
+                while(!"MERC".equals(identificador))
                 {
+                    if("BEBP".equals(identificador))
+                    {
+                        lectorT = new byte[4];
+                        Biblioteca.read(lectorT);
+                        identificador= new String(lectorT);
+                    }
+                    short tamaño= Biblioteca.readShort();
+                    byte[] info = new byte[tamaño];
+                    Biblioteca.read(info);
+                    b.DiferenciadorTags(identificador, info);
+                    //
                     lectorT = new byte[4];
                     Biblioteca.read(lectorT);
                     identificador= new String(lectorT);
-                }
-                short tamaño= Biblioteca.readShort();
-                byte[] info = new byte[tamaño];
-                Biblioteca.read(info);
-                b.DiferenciadorTags(identificador, info);
-                //
-                lectorT = new byte[4];
-                Biblioteca.read(lectorT);
-                identificador= new String(lectorT);
-                if(("BEBP".equals(identificador))||("MERC".equals(identificador)))
-                {
-                    lista.add(b);
-                    b= new Boton();
+                    if(("BEBP".equals(identificador))||("MERC".equals(identificador)))
+                    {
+                        lista.add(b);
+                        b= new Boton();
+                    }
                 }
             }
             Biblioteca.close();
@@ -426,15 +410,148 @@ public class Interfaz extends javax.swing.JFrame implements ActionListener {
             this.Panel.add(bPista);
         }
     }
+    public void getFiles( String dir_path ) {
+
+            String[] arr_res = null;
+           
+            File f = new File( dir_path );
+            Funciones fun= new Funciones();
+
+            if ( f.isDirectory( )) {
+
+                List<String> res   = new ArrayList<>();
+                File[] arr_content = f.listFiles();
+                String[] lista= f.list();
+                f.getPath();
+                int size = lista.length;
+
+                for ( int i = 0; i < size; i ++ ) {
+                    
+                    String nuevaRuta = dir_path+"\\"+lista[i];
+                    File fNuevo = new File(nuevaRuta);
+                    if(fNuevo.isDirectory())
+                    {
+                        getFiles(nuevaRuta);
+                    }
+                    if(fNuevo.isFile())
+                    {
+                        if(fun.esMp3(nuevaRuta))
+                        {
+                            agregarCancion(nuevaRuta);
+                        }
+                    }
+                }
+
+                arr_res = lista;
+
+            } else
+                System.err.println( "¡ Path NO válido !" );
+
+        }
+    
+    public void agregarCancion(String ruta)
+    {
+        try {
+            Biblioteca=new RandomAccessFile(rutaBiblioteca,"rw");
+            long tamañoBiblio=Biblioteca.length();
+            if(tamañoBiblio!=0)
+            {
+                tamañoBiblio=tamañoBiblio-4;
+            }
+            Biblioteca.seek(tamañoBiblio);
+            TextoBooleano.setText("si es");
+            Biblioteca.writeBytes("BEBP"); //este es mi separador
+            Biblioteca.writeBytes("PATH");
+            Biblioteca.writeShort(ruta.length());
+            Biblioteca.writeBytes(ruta);
+            try {
+                        RandomAccessFile archivo= new RandomAccessFile(ruta,"rw");
+                        for(int i=1; i<=10;i++)
+                        {
+                            archivo.readByte();
+                        }
+                        byte[] tagB = new byte[4];
+                        archivo.read(tagB);
+                        String tagN=new String(tagB);
+                        
+                        short posic=Fun.ObtenerTag(tagN);
+                        while(posic!=-3)
+                        {
+                            
+                            int tamaño =  archivo.readInt();
+                            for(int i=0; i<2;i++)
+                            {
+                                archivo.readByte();
+                            }
+                            byte[] contenido = new byte[tamaño];
+                            archivo.read(contenido);
+                            String tCon= new String(contenido);
+                            
+                            if(posic!=-1)
+                            {
+                                Biblioteca.writeBytes(tagN); //escribo la cabecera del tag
+                                //esto de aquí es para almacenar los tags en 
+                                Biblioteca.writeShort(tCon.length());
+                                Biblioteca.writeBytes(tCon);
+                                //
+//                                TextR.setText(TextR.getText()+Fun.TraducirTag(posic)+": " + tCon+"-"); //esto ya no me sirve
+                            }
+                            tagB = new byte[4];
+                            archivo.read(tagB);
+                            tagN=new String(tagB);
+                            posic=Fun.ObtenerTag(tagN);
+                        }
+                        archivo.close();
+                    } catch (FileNotFoundException ex) {
+                        Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (IOException ex) {
+                        Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+                    }
+            Biblioteca.writeBytes("MERC"); //esto indica que es el final
+            Biblioteca.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        }
+            
+    }
+    private String VerificarBiblio()
+    {
+        try {
+            RandomAccessFile revision = new RandomAccessFile("Direccion.path","rw");
+            if(revision.length()==0)
+            {
+                BotonArtista.setEnabled(false);
+                BAbrir.setEnabled(false);
+                BotonAlbum.setEnabled(false);
+                BotonPista.setEnabled(false);
+                BtnVaciarPantalla.setEnabled(false);
+            }
+            else{
+                AgregarRuta.setEnabled(false);
+                revision.readByte();
+                rutaBiblioteca= revision.readLine();
+            }
+            revision.close();
+        } catch (FileNotFoundException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (IOException ex) {
+            Logger.getLogger(Interfaz.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        return rutaBiblioteca;
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton AgregarRuta;
     private javax.swing.JButton BAbrir;
     private javax.swing.JButton BotonAlbum;
     private javax.swing.JButton BotonArtista;
     private javax.swing.JButton BotonPista;
+    private javax.swing.JButton BtnVaciarPantalla;
     private javax.swing.JPanel Panel;
     private javax.swing.JTextField TextoBooleano;
-    private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
